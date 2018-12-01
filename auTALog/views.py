@@ -43,8 +43,6 @@ def index():
 				' Please <a href="'+flask.url_for('security.logout')+
 				'">log out</a>').format(int(duration / 60)), 
 				'danger')
-
-
 	
 	return flask.render_template("index.html", user=user, 
 		clock=ts, duration=int(duration / 60))
@@ -54,6 +52,11 @@ def index():
 @app.route('/post', methods=['GET', 'POST'])
 @login_required
 def post():
+	tsid = flask.session.get('tsid')
+	if tsid is None:
+		flask.flash('Clock in before recording encounters', 'warning')
+		return flask.redirect(flask.url_for('index'))
+
 	form = HoursForm(flask.request.form)
 	if flask.request.method == 'POST':
 		# record new encounter if form is filled out correctly
