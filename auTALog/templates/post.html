@@ -1,0 +1,106 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}Student Encounter{% endblock %}
+
+{% block navbar %}
+<nav class="navbar navbar-default">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-6">
+				<a href="{{ url_for('index') }}">Home</a>
+			</div>
+			
+			<div class="col-md-6">
+				<span class="pull-right">{{user.email}}</span>
+			</div>
+		</div>
+	</div>
+</nav>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+	<div class="page-header">
+		<h3>Record Tutoring Encounter</h3>
+	</div>
+
+	{% with messages = get_flashed_messages(with_categories=true) %}
+  	{% if messages %}
+    	{% for category, message in messages %}
+      		<div class="alert alert-{{ category }}">
+      			{{ message }}
+      		</div>
+		{% endfor %}
+	{% endif %}
+	{% endwith %}
+	
+	<h4>Record new encounter</h4>
+	<form method="POST" href="{{ url_for('post') }}">
+		{{ form.csrf_token }}
+		<div class="row">
+			<div class="col-md-3">
+				<div class="form-group">
+					<label for="student">Student ID/email</label>
+					<input type="text" id="student"
+						class="form-control form-control-lg" 
+						name="student">
+				</div>
+			</div>
+			<div class="col-md-4">
+				<div class="form-group">
+					<label for="course">Select course</label>
+					<select class="custom-select" id="course"
+						name="course">
+						<option value="" SELECTED>Course</option>
+						{% for course in courses %}
+						<option value="{{course.id}}">{{ course.label }}</option>
+						{% endfor %}
+					</select>
+				</div>
+			</div>
+
+			<div class="col-md-5">
+				<div class="form-group">
+					<label for="comment">Comment</label>
+					<textarea class="form-control" rows="1" id="comment"
+						name="comment"></textarea>
+				</div>
+			</div>
+			
+		</div>
+
+		<div class="row">
+			<div class="col-md">
+				<button type="submit" class="btn btn-default btn-lg btn-primary"
+					>Record</button>
+				Check to flag for review by faculty
+				<input type="checkbox" value="" id="flag" 
+						name="flag">
+			</div>
+		</div>
+	</form>
+
+	<h4>Recent Encounters</h4>
+	<table class="table">
+		<thead>
+			<tr>
+				<th scope="col">Teaching Assistant</th>
+				<th scope="col">Subject</th>
+				<th scope="col">Date and time</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for log in logs %}
+			<!-- {{ log }} -->
+			<tr>
+				<td>{{ log.User.email }}</td>
+				<td>{{ log.Course.label }}</td>
+				<td>{{ log.Log.timestamp.strftime('%a, %b %d %Y at %-I:%M %p') }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+
+{% endblock %}

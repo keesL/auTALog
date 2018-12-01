@@ -1,0 +1,71 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}AU Math & CS Tutoring App{% endblock %}
+
+
+{% block navbar %}
+<nav class="navbar navbar-default">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-6">
+				<a href="{{ url_for('index') }}">Home</a>
+			</div>
+			
+			<div class="col-md-6">
+				<span class="pull-right">{{user.email}}</span>
+			</div>
+		</div>
+	</div>
+</nav>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+	<div class="page-header">
+		<h2>Dashboard for {{ user.name }}</h2>
+	</div>
+
+	{% with messages = get_flashed_messages(with_categories=true) %}
+  	{% if messages %}
+    	{% for category, message in messages %}
+      		<div class="alert alert-{{ category }}">
+      			{{ message }}
+      		</div>
+		{% endfor %}
+	{% endif %}
+	{% endwith %}
+
+	<p>
+	{% if clock is none %}
+	You are currently not on the clock
+	{% else %}
+	You have been on the clock since {{ 
+		clock.started.strftime('%A, %B %-d at %-I:%M %P') }}
+	{% endif %}
+	</p>
+
+	<form method="POST">
+		<div class="form-group">
+			<div class="btn-toolbar">
+				{% if clock is not none %}
+				<button disabled name="action" value="start" 
+					class="btn btn-lg btn-primary">Clock in</button>
+				<a href="{{ url_for('post') }}" 
+				   class="btn btn-lg btn-info">Record encouters</a>
+				<button name="action" value="stop" 
+					class="btn btn-lg btn-warning">Clock out</button>
+				{% else %}
+				<button name="action" value="start" 
+					class="btn btn-lg btn-primary">Clock in</button>
+				<a disabled href="{{ url_for('post') }}" 
+				   class="btn btn-lg btn-info">Record encouters</a>
+				<button disabled name="action" value="stop" 
+					class="btn btn-lg btn-warning">Clock out</button>
+				{% endif %}
+			</div>
+		</div>
+	</form>
+</div>
+
+{% endblock %}
