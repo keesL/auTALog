@@ -81,7 +81,9 @@
 		</div>
 	</form>
 
-	<h4>Recent Encounters</h4>
+
+	<!-- have to find a better way to add vertical space in bootstrap -->
+	<h4 style="padding-top: 40px;">Recent Encounters</h4>
 	<table class="table">
 		<thead>
 			<tr>
@@ -92,8 +94,7 @@
 		</thead>
 		<tbody>
 			{% for log in logs %}
-			<!-- {{ log }} -->
-			<tr>
+			<tr class="small">
 				<td>{{ log.User.email }}</td>
 				<td>{{ log.Course.label }}</td>
 				<td>{{ log.Log.timestamp.strftime('%a, %b %d %Y at %-I:%M %p') }}</td>

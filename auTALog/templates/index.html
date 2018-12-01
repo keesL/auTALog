@@ -16,6 +16,7 @@
 		</div>
 	</div>
 </nav>
+
 {% endblock %}
 
 
@@ -36,12 +37,13 @@
 	{% endif %}
 	{% endwith %}
 
-	<p>
+	<p class="lead">
 	{% if clock is none %}
-	You are currently not on the clock
+	You are currently not clocked in
 	{% else %}
-	You have been on the clock since {{ 
-		clock.started.strftime('%A, %B %-d at %-I:%M %P') }}
+	You have been clocked in since {{ 
+		clock.started.strftime('%A, %B %-d at %-I:%M %P') }} ( {{
+		duration }} minutes ago )
 	{% endif %}
 	</p>
 

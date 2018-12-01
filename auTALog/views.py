@@ -43,8 +43,9 @@ def index():
 				'">log out</a>').format(int(duration.seconds / 60)), 
 				'danger')
 
+	duration = datetime.now() - ts.started
 	return flask.render_template("index.html", user=user, 
-		clock=ts)
+		clock=ts, duration=int(duration.seconds / 60))
 
 
 
