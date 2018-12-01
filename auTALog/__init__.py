@@ -6,10 +6,18 @@ import flask_security
 
 
 app = Flask(__name__)
-app.secret_key = b'M\xc8\x07\x02\xc7\xa4Y_\x99\x90\x0c\xf6r\xceY4'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://autalog:autalog@localhost/autalog'
 app.config['SECURITY_PASSWORD_SALT'] = 'unused'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# BEGIN FIXME  
+# this is somewhat acceptable which developing, but make sure
+# to take these settings out of the main source code repo and
+# move it to an untracked config file
+
+app.secret_key = b'M\xc8\x07\x02\xc7\xa4Y_\x99\x90\x0c\xf6r\xceY4'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://autalog:autalog@localhost/autalog'
+
+# END FIXME
 
 Bootstrap(app)
 db = SQLAlchemy(app)
