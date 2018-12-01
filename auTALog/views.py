@@ -19,8 +19,10 @@ def index():
 	tsid = flask.session.get('tsid')
 	if tsid is None:
 		ts = None
+		duration = 0
 	else:
 		ts = TutoringSession.query.filter_by(id=tsid).first()
+		duration = (datetime.now() - ts.started).seconds
 
 	# process buttons being pushed
 	if flask.request.method == 'POST':		
@@ -33,19 +35,19 @@ def index():
 			flask.flash("Started new tutoring session", 'success')
 		else:
 			ts.ended = datetime.now()
-			duration = ts.ended - ts.started
 			
 			db.session.commit()
 			flask.session.pop('tsid', None)
 			ts = None
 			flask.flash(Markup('Tutoring session ended after {} minutes.'+
 				' Please <a href="'+flask.url_for('security.logout')+
-				'">log out</a>').format(int(duration.seconds / 60)), 
+				'">log out</a>').format(int(duration / 60)), 
 				'danger')
 
-	duration = datetime.now() - ts.started
+
+	
 	return flask.render_template("index.html", user=user, 
-		clock=ts, duration=int(duration.seconds / 60))
+		clock=ts, duration=int(duration / 60))
 
 
 
