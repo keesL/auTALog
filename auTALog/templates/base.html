@@ -1,6 +1,38 @@
 {% extends "bootstrap/base.html" %}
 
-{% block styles %}
-{{super()}}
-<link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+{% block navbar %}
+{% if not user is none %}
+<nav class="navbar navbar-default">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-6">
+				<a class="btn btn-sm btn-primary"
+					href="{{ url_for('index') }}">Home</a>
+			</div>
+			
+			<div class="col-md-6">
+				<span class="pull-right">
+					{% if current_user.has_role('admin') %}
+					<a class="btn btn-sm btn-danger" 
+					href="{{url_for('admin')}}">Admin</a>
+					{% endif %}
+				</span>
+			</div>
+		</div>
+	</div>
+</nav>
+{% endif %}
+{% endblock %}
+
+
+{% block flashme %}
+	{% with messages = get_flashed_messages(with_categories=true) %}
+	  	{% if messages %}
+	    	{% for category, message in messages %}
+	      		<div class="alert alert-{{ category }}">
+	      			{{ message }}
+	      		</div>
+			{% endfor %}
+		{% endif %}
+	{% endwith %}
 {% endblock %}

@@ -43,7 +43,6 @@ class User(db.Model, flask_security.UserMixin):
     roles = db.relationship('Role', secondary=roles_users,
         backref=db.backref('users', lazy='dynamic'))    
 
-
 class Course(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     label = db.Column(db.String(80), nullable=False, unique=True)

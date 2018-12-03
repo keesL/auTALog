@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}AU Math & CS Tutoring App{% endblock %}
+
+
+{% block content %}
+<div class="container">
+	<div class="page-header">
+		<h2>User management</h2>
+	</div>
+
+	{{ self.flashme() }}
+	<form method="POST" action="{{url_for("users")}}">
+	{{ form.cstf_token }}
+	<div class="row">
+		<div class="col-md-2"></div>
+		<div class="col-md-8">
+			
+			<table class="table">
+			<thead>
+				<tr>
+					<th scope="col">Name</th>
+					<th scope="col">Email</th>
+					<th scope="col">Role</th>
+					<th scope="col">Operations</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for user in users %}
+				<tr class="small">
+					<td>{{ user.name }}</td>
+					<td>{{ user.email }}</td>
+					<td>Role</td>
+					<td><a class="btn btn-primary btn-sm"
+						   href="{{ url_for('users') }}/{{user.id}}/edit"
+						   >Edit</a> 
+					    <button name="action" value="delete"
+					    	class="btn btn-danger btn-sm">Delete</button>
+					</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+			</table>
+		</div>
+		<div class="col-md-2"></div>
+	</div>
+
+	<h2>Add new user</h2>
+	{% if not subject is none %}
+	<input type="hidden" name="id" value="{{ subject.id }}">
+	{% endif %}
+	<div class="row">
+		<div class="col-md-2"></div>
+		<div class="col-md-8"><table class="table table-sm">
+			<tr>
+				<td>Email address</td>
+				<td>{% if not subject is none %}
+					<input type="text" placeholder="Adelphi email"
+						name="email" value="{{ subject.email }}"></td>
+					{% else %}
+					<input type="text" placeholder="Adelphi email"
+						name="email"></td>
+					{% endif %}
+			</tr>
+			<tr>
+				<td>Name</td>
+				<td>{% if not subject is none %}
+					<input type="text" placeholder="First and last name"
+						name="name" value="{{ subject.name }}"></td>
+					{% else %}
+					<input type="text" placeholder="First and last name"
+						name="name"></td>
+					{% endif %}
+			</tr>
+			<tr>
+				<td>Password</td>
+				<td><input type="password" name="password"></td>
+			</tr>
+			<tr>
+				<td>Roles</td>
+				{% if subject is none %}
+				<td><select multiple class="form-control" id="roles" 
+					name="roles">
+					{% for role in all_roles %}
+					<option value="{{ role.id }}">{{role.name}}</option>
+					{% endfor %}
+					</select>
+				</td>
+				{% else %}
+				<td><select multiple class="form-control" id="roles" 
+					name="roles">
+			
+					{% for role in all_roles %}
+					{% if role in subject_roles %}
+					<option selected value="{{ role.id }}">{{role.name}}</option>
+					{% else %}
+					<option value="{{ role.id }}">{{role.name}}</option>
+					{% endif %}
+					{% endfor %}
+					</select>
+				</td>
+				{% endif %}
+				</td>
+			</tr>
+		</table>
+
+		<button name="action" value="save" 
+			class="btn btn-primary">Save</button>
+		</div>
+
+		<div class="col-md-2"></div>
+	</div>
+	</form>
+
+</div>
+{% endblock %}

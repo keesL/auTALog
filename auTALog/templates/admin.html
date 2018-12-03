@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}AU Math & CS Tutoring App{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+	<div class="page-header">
+		<h2>Admin Console</h2>
+	</div>
+
+	{{ self.flashme() }}
+	
+	<form method="POST">
+		<div class="form-group">
+			<div class="btn-toolbar">
+				<a href="{{ url_for('index') }}"
+					class="btn btn-lg btn-primary">Dashboard</a>
+				<a href="{{ url_for('users') }}"
+					class="btn btn-lg btn-primary">Manage Users</a>
+				<a href="{{ url_for('post') }}" 
+				   class="btn btn-lg btn-primary">Manage Courses</a>
+			</div>
+		</div>
+	</form>
+</div>
+
+{% endblock %}

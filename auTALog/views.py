@@ -1,11 +1,12 @@
 from auTALog import app, db
-from auTALog.models import Course, Log, User, TutoringSession
-from auTALog.forms import HoursForm, ActionForm
+from auTALog.models import Course, Log, User, TutoringSession, roles_users, Role
+from auTALog.forms import HoursForm, ActionForm, UserForm
 
 from datetime import datetime
 from markupsafe import Markup
 import flask
-from flask_security import login_required
+from flask_security import login_required, roles_accepted
+from flask_security.utils import hash_password
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -44,13 +45,14 @@ def index():
 				'">log out</a>').format(int(duration / 60)), 
 				'danger')
 	
-	return flask.render_template("index.html", user=user, 
-		clock=ts, duration=int(duration / 60))
+	return flask.render_template("index.html", form=form,  
+		clock=ts, duration=int(duration / 60), user=user)
 
 
 
 @app.route('/post', methods=['GET', 'POST'])
 @login_required
+@roles_accepted('admin', 'ta')
 def post():
 	tsid = flask.session.get('tsid')
 	if tsid is None:
@@ -70,7 +72,6 @@ def post():
 			flask.flash("Encounter recorded successfully", "success")
 		else:
 			flask.flash("Form did not validate", "warning")
-			print("Form did not validate")
 
 	# show recent encounters
 	logs = db.session.query(Log, TutoringSession, User, Course).filter(
@@ -79,6 +80,58 @@ def post():
 		TutoringSession.ta == User.id).order_by(
 		Log.timestamp.desc()).limit(5)
 
-	user = User.query.filter_by(id=flask.session['user_id']).first()
 	return flask.render_template("post.html", logs=logs, 
-		courses=Course.query.all(), form=form, user=user)
+		courses=Course.query.all(), form=form)
+
+
+
+@app.route('/admin', methods=['GET'])
+@roles_accepted('admin')
+@login_required
+def admin():
+	user = User.query.filter_by(id=flask.session['user_id']).first()
+	return flask.render_template('admin.html')
+
+
+
+@app.route('/admin/user', methods=['POST', 'GET'])
+@app.route('/admin/user/<id>/<action>', methods=['GET'])
+@roles_accepted('admin')
+@login_required
+def users(id=None, action=None):
+	userform = UserForm(flask.request.form)
+	user = User.query.filter_by(id=flask.session['user_id']).first()
+	subj = None
+	subj_roles = None
+	all_roles = Role.query.all()
+
+	if flask.request.method=='POST':
+		action = userform.action.data
+		id = userform.id.data
+
+	if action == "edit":
+		subj = User.query.filter_by(id=id).first()
+		subj_roles = Role.query.join(roles_users).filter(
+			roles_users.c.user_id == id).all()
+
+	elif action == "save" and flask.request.method=='POST':
+		update = User.query.filter_by(id=userform.id.data).first()
+		if update is None:
+			update = User(active=True)
+		update.name = userform.name.data
+		update.email = userform.email.data
+
+		if  userform.password.data != "":
+			flask.flash("Password has been updated", "info")
+			update.password = hash_password(userform.password.data)
+		db.session.add(update)
+		db.session.commit()
+		flask.flash("Saved.", "info")
+
+	elif action == "delete":
+		print("Deleting")
+
+	return flask.render_template('users.html', 
+		users=User.query.all(), form=userform, 
+		action=action, subject=subj, subject_roles=subj_roles, 
+		all_roles=all_roles)

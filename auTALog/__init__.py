@@ -30,3 +30,9 @@ from auTALog.models import User, Role
 user_datastore = flask_security.SQLAlchemyUserDatastore(db, User, Role)
 security = flask_security.Security(app, user_datastore)
 
+def setupDB():
+	adminRole = Role(name="admin", description="Admin role")
+	taRole = Role(name="ta", description="Teaching assistant")
+	db.session.add(adminRole)
+	db.session.add(taRole)
+	db.session.commit()
