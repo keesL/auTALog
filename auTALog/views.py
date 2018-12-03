@@ -1,6 +1,6 @@
 from auTALog import app, db
 from auTALog.models import Course, Log, User, TutoringSession, roles_users, Role
-from auTALog.forms import HoursForm, ActionForm, UserForm
+from auTALog.forms import HoursForm, ActionForm, UserForm, CourseForm
 
 from datetime import datetime
 from markupsafe import Markup
@@ -81,7 +81,7 @@ def post():
 		Log.timestamp.desc()).limit(5)
 
 	return flask.render_template("post.html", logs=logs, 
-		courses=Course.query.all(), form=form)
+		courses=Course.query.all().order_by(Course.id), form=form)
 
 
 
@@ -103,7 +103,7 @@ def users(id=None, action=None):
 	user = User.query.filter_by(id=flask.session['user_id']).first()
 	subj = None
 	subj_roles = None
-	all_roles = Role.query.all()
+	all_roles = Role.query.order_by(Role.id).all()
 
 	if flask.request.method=='POST':
 		action = userform.action.data
@@ -116,22 +116,101 @@ def users(id=None, action=None):
 
 	elif action == "save" and flask.request.method=='POST':
 		update = User.query.filter_by(id=userform.id.data).first()
+
 		if update is None:
 			update = User(active=True)
+
+		subj_roles = db.session.query(roles_users).filter(
+			roles_users.c.user_id == update.id).all()
+
 		update.name = userform.name.data
 		update.email = userform.email.data
+		update.active = userform.active.data
 
+		# add missing roles
+		for role in userform.roles.data:
+			role = int(role)
+			if not (update.id, role) in subj_roles:
+				r = Role.query.filter_by(id = role).first()
+				flask.flash("Added role {}".format(r.name), "info")
+				ins = roles_users.insert().values(user_id=update.id, role_id=role)
+				db.session.execute(ins)
+				subj_roles.append((update.id, role))
+
+		# delete removed roles
+		for (userid, roleid) in subj_roles:
+			roleid = str(roleid)
+			if not roleid in userform.roles.data:
+				r = Role.query.filter_by(id = roleid).first()
+				flask.flash("Removed role {}".format(r.name), "info")
+				rm = roles_users.delete().where(
+					roles_users.c.user_id == userid).where(
+					roles_users.c.role_id == roleid)				
+				db.session.execute(rm)
+
+		# update password (if needed)
 		if  userform.password.data != "":
 			flask.flash("Password has been updated", "info")
 			update.password = hash_password(userform.password.data)
+
 		db.session.add(update)
 		db.session.commit()
 		flask.flash("Saved.", "info")
 
 	elif action == "delete":
-		print("Deleting")
+		rm = roles_users.delete().where(roles_users.c.user_id == id)
+		db.session.execute(rm)
+		
+		subject = User.query.filter_by(id=id).first()
+		db.session.delete(subject)
+		db.session.commit()
+
+
 
 	return flask.render_template('users.html', 
 		users=User.query.all(), form=userform, 
 		action=action, subject=subj, subject_roles=subj_roles, 
 		all_roles=all_roles)
+
+
+
+
+@app.route('/admin/course', methods=['POST', 'GET'])
+@app.route('/admin/course/<id>/<action>', methods=['GET'])
+@roles_accepted('admin')
+@login_required
+def courses(id=None, action=None):
+	courseform = CourseForm(flask.request.form)
+	user = User.query.filter_by(id=flask.session['user_id']).first()
+	subj = None
+
+	if flask.request.method=='POST':
+		action = courseform.action.data
+		id = courseform.id.data
+
+	if action == "edit":
+		subj = Course.query.filter_by(id=id).first()
+		
+	elif action == "save" and flask.request.method=='POST':
+		update = Course.query.filter_by(id=courseform.id.data).first()
+
+		if update is None:
+			update = Course()
+
+		update.label = courseform.name.data
+		
+		db.session.add(update)
+		db.session.commit()
+		flask.flash("Saved.", "info")
+		subj=None
+
+	elif action == "delete":
+		subject = Course.query.filter_by(id=id).first()
+		db.session.delete(subject)
+		db.session.commit()
+		flask.flash("Removed course", "info")
+
+
+	return flask.render_template('courses.html', 
+		courses=Course.query.all(), form=courseform, 
+		action=action, subject=subj)

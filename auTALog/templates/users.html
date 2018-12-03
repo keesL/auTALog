@@ -20,6 +20,7 @@
 				<tr>
 					<th scope="col">Name</th>
 					<th scope="col">Email</th>
+					<th scope="col">Active</th>
 					<th scope="col">Role</th>
 					<th scope="col">Operations</th>
 				</tr>
@@ -29,12 +30,17 @@
 				<tr class="small">
 					<td>{{ user.name }}</td>
 					<td>{{ user.email }}</td>
+					{% if user.active %}
+					<td><span class="label label-success">Active</span></td>
+					{% else %}
+					<td><span class="label label-warning">Not Active</span></td>
+					{% endif %}
 					<td>Role</td>
 					<td><a class="btn btn-primary btn-sm"
 						   href="{{ url_for('users') }}/{{user.id}}/edit"
 						   >Edit</a> 
-					    <button name="action" value="delete"
-					    	class="btn btn-danger btn-sm">Delete</button>
+					    <a class="btn btn-danger btn-sm"
+					       href="{{ url_for('users') }}/{{user.id}}/delete">Delete</button>
 					</td>
 				</tr>
 				{% endfor %}
@@ -71,6 +77,13 @@
 						name="name"></td>
 					{% endif %}
 			</tr>
+			<tr>
+				<td>Active?</td>
+				<td>{% if subject.active %}
+					<input type="checkbox" name="active" checked>
+					{% else %}
+					<input type="checkbox" name="active">
+					{% endif %}</td>
 			<tr>
 				<td>Password</td>
 				<td><input type="password" name="password"></td>
