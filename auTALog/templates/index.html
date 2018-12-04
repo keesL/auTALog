@@ -27,21 +27,28 @@
 				{% if clock is not none %}
 				<button disabled name="action" value="start" 
 					class="btn btn-lg btn-primary">Clock in</button>
+				{% if current_user.has_role('tutor') %}
 				<a href="{{ url_for('post') }}" 
 				   class="btn btn-lg btn-info">Record encouters</a>
+				{% endif %}
 				<button name="action" value="stop" 
 					class="btn btn-lg btn-warning">Clock out</button>
-				<a disabled href="{{ url_for('security.logout') }}"
-					class="btn btn-lg btn-warning">Log out</a>
+				<a disabled href="#" class="btn btn-lg btn-warning">Log out</a>
 				{% else %}
 				<button name="action" value="start" 
 					class="btn btn-lg btn-primary">Clock in</button>
-				<a disabled href="{{ url_for('post') }}" 
+				{% if current_user.has_role('tutor') %}
+				<a disabled href="#" 
 				   class="btn btn-lg btn-info">Record encouters</a>
+				{% endif %}
 				<button disabled name="action" value="stop" 
 					class="btn btn-lg btn-warning">Clock out</button>
 				<a href="{{ url_for('security.logout') }}"
 					class="btn btn-lg btn-warning">Log out</a>
+				{% endif %}
+				{% if current_user.has_role('admin') %}
+					<a class="btn btn-lg btn-danger" 
+					href="{{url_for('admin')}}">Admin</a>
 				{% endif %}
 			</div>
 		</div>

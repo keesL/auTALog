@@ -9,15 +9,6 @@
 				<a class="btn btn-sm btn-primary"
 					href="{{ url_for('index') }}">Home</a>
 			</div>
-			
-			<div class="col-md-6">
-				<span class="pull-right">
-					{% if current_user.has_role('admin') %}
-					<a class="btn btn-sm btn-danger" 
-					href="{{url_for('admin')}}">Admin</a>
-					{% endif %}
-				</span>
-			</div>
 		</div>
 	</div>
 </nav>

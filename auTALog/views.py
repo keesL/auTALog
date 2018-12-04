@@ -33,14 +33,14 @@ def index():
 			db.session.add(ts)
 			db.session.commit()
 			flask.session['tsid'] = ts.id
-			flask.flash("Started new tutoring session", 'success')
+			flask.flash("Started new session", 'success')
 		else:
 			ts.ended = datetime.now()
 			
 			db.session.commit()
 			flask.session.pop('tsid', None)
 			ts = None
-			flask.flash(Markup('Tutoring session ended after {} minutes.'+
+			flask.flash(Markup('Session ended after {} minutes.'+
 				' Please <a href="'+flask.url_for('security.logout')+
 				'">log out</a>').format(int(duration / 60)), 
 				'danger')
@@ -52,7 +52,7 @@ def index():
 
 @app.route('/post', methods=['GET', 'POST'])
 @login_required
-@roles_accepted('admin', 'ta')
+@roles_accepted('admin', 'tutor')
 def post():
 	tsid = flask.session.get('tsid')
 	if tsid is None:
@@ -81,7 +81,7 @@ def post():
 		Log.timestamp.desc()).limit(5)
 
 	return flask.render_template("post.html", logs=logs, 
-		courses=Course.query.all().order_by(Course.id), form=form)
+		courses=Course.query.order_by(Course.id).all(), form=form)
 
 
 

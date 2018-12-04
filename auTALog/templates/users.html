@@ -21,7 +21,6 @@
 					<th scope="col">Name</th>
 					<th scope="col">Email</th>
 					<th scope="col">Active</th>
-					<th scope="col">Role</th>
 					<th scope="col">Operations</th>
 				</tr>
 			</thead>
@@ -35,7 +34,6 @@
 					{% else %}
 					<td><span class="label label-warning">Not Active</span></td>
 					{% endif %}
-					<td>Role</td>
 					<td><a class="btn btn-primary btn-sm"
 						   href="{{ url_for('users') }}/{{user.id}}/edit"
 						   >Edit</a> 
