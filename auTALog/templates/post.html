@@ -1,21 +1,5 @@
-{% extends "bootstrap/base.html" %}
+{% extends "base.html" %}
 {% block title %}Student Encounter{% endblock %}
-
-{% block navbar %}
-<nav class="navbar navbar-default">
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-md-6">
-				<a href="{{ url_for('index') }}">Home</a>
-			</div>
-			
-			<div class="col-md-6">
-				<span class="pull-right">{{user.email}}</span>
-			</div>
-		</div>
-	</div>
-</nav>
-{% endblock %}
 
 
 {% block content %}
@@ -25,15 +9,7 @@
 		<h3>Record Tutoring Encounter</h3>
 	</div>
 
-	{% with messages = get_flashed_messages(with_categories=true) %}
-  	{% if messages %}
-    	{% for category, message in messages %}
-      		<div class="alert alert-{{ category }}">
-      			{{ message }}
-      		</div>
-		{% endfor %}
-	{% endif %}
-	{% endwith %}
+	{{ self.flashme() }}
 	
 	<h4>Record new encounter</h4>
 	<form method="POST" href="{{ url_for('post') }}">
@@ -52,7 +28,7 @@
 					<label for="course">Select course</label>
 					<select class="custom-select" id="course"
 						name="course">
-						<option value="" SELECTED>Course</option>
+						<option value="" SELECTED disabled>Course</option>
 						{% for course in courses %}
 						<option value="{{course.id}}">{{ course.label }}</option>
 						{% endfor %}
@@ -103,5 +79,9 @@
 		</tbody>
 	</table>
 </div>
+{% endblock %}
 
+{% block scripts %}
+{{super()}}
+<script src="{{url_for('.static', filename='post.js')}}"></script>
 {% endblock %}
