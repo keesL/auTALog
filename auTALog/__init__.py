@@ -2,6 +2,7 @@ from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy 
 from flask_migrate import Migrate
+from flask_security.utils import hash_password
 import flask_security 
 
 
@@ -32,7 +33,16 @@ security = flask_security.Security(app, user_datastore)
 
 def setupDB():
 	adminRole = Role(name="admin", description="Admin role")
-	taRole = Role(name="ta", description="Teaching assistant")
+	tutorRole = Role(name="tutor", description="Tutor")
+        graderRole = Role(name="grader", description="Grader")
+
+        adminUser = User(email="leune@adelphi.edu", password=hash_password('hello'))
+
+        db.session.add(adminUser)
 	db.session.add(adminRole)
-	db.session.add(taRole)
+	db.session.add(tutorRole)
+	db.session.add(graderRole)
 	db.session.commit()
+
+        ins = roles_users.insert().values(user_id=adminUser.id, adminRole.id)
+        db.session.execute(ins)
