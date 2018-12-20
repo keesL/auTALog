@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}AU Math & CS Tutoring App{% endblock %}
+
+
+{% block content %}
+<div class="container">
+
+	<div class="page-header">
+		<h2>Detailed Tutoring report</h2>
+	</div>
+
+	{{ self.flashme() }}
+
+	<h2>Summary</h2>
+
+	<p>Tutoring provided by <span class="font-weight-normal">{{ email }}</span>.</p>
+	
+	<div class="row">
+	<div class="col-md-12">
+		<h3>Tutoring sessions</h3>
+		<table class="table">
+			<thead class="thead-inverse">
+				<tr>
+					<th>Begin</th>
+					<th>End</th>
+					<th>Students seen</th>
+				</tr>
+			</thead>
+
+			<tbody>
+		{% for row in rows %}
+				<tr>
+					<td>{{ row.started.strftime("%d-%b-%Y   %I:%M %p") }}</td>
+					<td>{{ row.ended.strftime("%d-%b-%Y   %I:%M %p") }}</td>
+					<td>{{ row.c }}</td>
+				</tr>
+		{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	</div><!-- row -->
+
+	<div class="row">
+	<div class="col-md-12">
+		<h3>Students seen</h3>
+		<table class="table">
+			<thead class="thead-inverse">
+				<tr>
+					<th>Student</th>
+					<th>Number of encounters</th>
+				</tr>
+			</thead>
+
+			<tbody>
+		{% for student in students %}
+				<tr>
+					<td>{{ student.student }}</td>
+					<td>{{ student.count }}</td>
+				</tr>
+		{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	</div><!-- row -->
+	
+</div><!-- container -->
+
+{% endblock %}

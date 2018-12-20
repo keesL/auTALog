@@ -1,6 +1,7 @@
 from auTALog import app, db
 from auTALog.models import Course, Log, User, TutoringSession, roles_users, Role
 from auTALog.forms import HoursForm, ActionForm, UserForm, CourseForm, ClockOutForm
+from sqlalchemy.sql import text
 
 from datetime import datetime
 from markupsafe import Markup
@@ -234,13 +235,49 @@ def clockout():
 	return flask.render_template('clockout.html', form=form, ts=ts)
 
 
-@app.route('/report/tutor/overview')
+
+
+@app.route('/report/<reporttype>/<reportsubtype>')
+@app.route('/report/<reporttype>/<reportsubtype>/<id>')
+@app.route('/reports')
 @roles_accepted('admin')
 @login_required
-def report():
-	result=db.engine.execute("""select * from tutoring_session
-join "user" on ("user".id = tutoring_session.ta)
-join (select session, count(student) from log group by session) as t 
-	on (t.session = tutoring_session.id)
-order by started desc, ended desc""")
-	return flask.render_template('report_tutor_overview.html', rows=result)
+def report(reporttype='tutor', reportsubtype='overview', id=None):
+
+	if reporttype=='tutor' and reportsubtype=='overview':
+		result=db.engine.execute("""
+			select "user".id, started, ended, email, count, summary 
+			from tutoring_session
+			join "user" on ("user".id = tutoring_session.ta)
+			join (select session, count(student) from log group by session) as t 
+				on (t.session = tutoring_session.id)
+			order by started desc, ended desc
+		""")
+		return flask.render_template('report_tutor_overview.html', rows=result)
+
+	elif reporttype=='tutor' and reportsubtype=='details':
+		user=User.query.filter_by(id=id).first()
+		query = text("""
+			select started, ended, c 
+			from   tutoring_session, ( 
+				select tutoring_session.id, count(student) as c 
+				from   tutoring_session 
+				join   log on (tutoring_session.id=log.session) 
+				where  ta=:id group by (tutoring_session.id)
+			) as s 
+			where tutoring_session.id = s.id""")
+		result=db.engine.execute(query, {'id': id})
+
+		query = text("""
+			select student, count(student)
+			from tutoring_session t, log l
+			where t.ta=:id
+			and   l.session=t.id
+			group by (student)
+			order by student asc""")
+		students=db.engine.execute(query, {'id': id})
+		return flask.render_template('report_tutor_details.html', email=user.email,
+			rows=result, students=students)
+
+	flask.flash("Unkown report", "warning	")
+	return flask.redirect(flask.url_for("index"))

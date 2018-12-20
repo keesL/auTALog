@@ -8,6 +8,7 @@ dominate==2.3.4
 Flask==1.0.2
 Flask-BabelEx==0.9.3
 Flask-Bootstrap==3.3.7.1
+flask-bootstrap-4-alpha==4.0.0b3.dev2
 Flask-Login==0.4.1
 Flask-Mail==0.9.1
 Flask-Migrate==2.3.0

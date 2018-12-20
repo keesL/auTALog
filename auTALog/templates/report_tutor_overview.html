@@ -32,7 +32,9 @@
 					Ongoing
 					{% endif %}
 				</td>
-				<td>{{ row.email }}</td>
+				<td><a href="{{url_for('report', reporttype='tutor',
+						reportsubtype='details', id=row.id)}}">{{ 
+					row.email }}</a></td>
 				<td>{{ row.count }}</td>
 				<td>{{ row.summary }}</td>
 			</tr>

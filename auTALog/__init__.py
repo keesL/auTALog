@@ -9,7 +9,7 @@ import flask_security
 app = Flask(__name__)
 app.config['SECURITY_PASSWORD_SALT'] = 'unused'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
+app.config['BOOTSTRAP_USE_MINIFIED'] = False
 # BEGIN FIXME  
 # this is somewhat acceptable which developing, but make sure
 # to take these settings out of the main source code repo and
