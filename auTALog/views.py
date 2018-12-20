@@ -1,6 +1,6 @@
 from auTALog import app, db
 from auTALog.models import Course, Log, User, TutoringSession, roles_users, Role
-from auTALog.forms import HoursForm, ActionForm, UserForm, CourseForm
+from auTALog.forms import HoursForm, ActionForm, UserForm, CourseForm, ClockOutForm
 
 from datetime import datetime
 from markupsafe import Markup
@@ -34,16 +34,6 @@ def index():
 			db.session.commit()
 			flask.session['tsid'] = ts.id
 			flask.flash("Started new session", 'success')
-		else:
-			ts.ended = datetime.now()
-			
-			db.session.commit()
-			flask.session.pop('tsid', None)
-			ts = None
-			flask.flash(Markup('Session ended after {} minutes.'+
-				' Please <a href="'+flask.url_for('security.logout')+
-				'">log out</a>').format(int(duration / 60)), 
-				'danger')
 	
 	return flask.render_template("index.html", form=form,  
 		clock=ts, duration=int(duration / 60), user=user)
@@ -221,4 +211,36 @@ def courses(id=None, action=None):
 @login_required
 def clockout():
 	form=ClockOutForm(flask.request.form)
-	return flask.render_template('clockout.html', form=form)
+	tsid = flask.session.get('tsid')
+	if tsid is None:
+		return flask.redirect(flask.url_for('index'))
+	ts = TutoringSession.query.filter_by(id=tsid).first()
+
+	if flask.request.method=='POST':
+		duration = (datetime.now() - ts.started).seconds
+		ts.ended = datetime.now()
+		ts.summary = form.summary.data
+
+		db.session.commit()
+		flask.session.pop('tsid', None)
+		ts = None
+		flask.flash(Markup('Session ended after {} minutes.'+
+			' Please <a href="'+flask.url_for('security.logout')+
+			'">log out</a>').format(int(duration / 60)), 
+			'danger')
+		return flask.redirect(flask.url_for('index'))
+
+
+	return flask.render_template('clockout.html', form=form, ts=ts)
+
+
+@app.route('/report/tutor/overview')
+@roles_accepted('admin')
+@login_required
+def report():
+	result=db.engine.execute("""select * from tutoring_session
+join "user" on ("user".id = tutoring_session.ta)
+join (select session, count(student) from log group by session) as t 
+	on (t.session = tutoring_session.id)
+order by started desc, ended desc""")
+	return flask.render_template('report_tutor_overview.html', rows=result)

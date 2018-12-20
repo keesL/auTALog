@@ -22,6 +22,7 @@ class TutoringSession(db.Model):
     ta = db.Column(db.Integer, db.ForeignKey('user.id'))
     started = db.Column(db.DateTime)
     ended = db.Column(db.DateTime)
+    summary = db.Column(db.Text, nullable=True)
 
     def __repr__(self):
         return "Tutoring session {}".format(self.id)

@@ -31,8 +31,8 @@
 				<a href="{{ url_for('post') }}" 
 				   class="btn btn-lg btn-info">Record encouters</a>
 				{% endif %}
-				<button name="action" value="stop" 
-					class="btn btn-lg btn-warning">Clock out</button>
+				<a href="{{ url_for('clockout') }}" 
+					class="btn btn-lg btn-warning">Clock out</a>
 				<a disabled href="#" class="btn btn-lg btn-warning">Log out</a>
 				{% else %}
 				<button name="action" value="start" 

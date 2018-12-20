@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}AU Math & CS Tutoring App{% endblock %}
+
+
+{% block content %}
+<div class="container">
+
+	<div class="page-header">
+		<h2>Tutoring report</h2>
+	</div>
+
+	{{ self.flashme() }}
+
+	<h2>Summary</h2>
+	
+	<div class="row">
+	<div class="col-md-12">
+		<table class="table">
+			<tr>
+				<th>Started</th>
+				<th>Ended</th>
+				<th>Tutor</th>
+				<th>Students seen</th>
+				<th>Comments</th>
+			</tr>
+	{% for row in rows %}
+			<tr>
+				<td>{{ row.started.strftime("%d-%b-%Y   %I:%M %p") }}</td>
+				<td>{% if not row.ended is none %}
+					{{ row.ended.strftime("%d-%b-%Y   %I:%M %p") }}
+					{% else %}
+					Ongoing
+					{% endif %}
+				</td>
+				<td>{{ row.email }}</td>
+				<td>{{ row.count }}</td>
+				<td>{{ row.summary }}</td>
+			</tr>
+	{% endfor %}
+		</table>
+	</div>
+	</div><!-- row -->
+
+	
+</div><!-- container -->
+
+{% endblock %}
