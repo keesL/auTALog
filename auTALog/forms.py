@@ -28,3 +28,7 @@ class CourseForm(FlaskForm):
 	id = IntegerField('id')
 	action = StringField('action', validators=[DataRequired()])
 	name = StringField('name')
+
+
+class ClockOutForm(FlaskForm):
+	summary = TextAreaField('summary')

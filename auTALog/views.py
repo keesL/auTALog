@@ -214,3 +214,11 @@ def courses(id=None, action=None):
 	return flask.render_template('courses.html', 
 		courses=Course.query.all(), form=courseform, 
 		action=action, subject=subj)
+
+
+@app.route('/clockout', methods=['GET', 'POST'])
+@roles_accepted('admin', 'tutor')
+@login_required
+def clockout():
+	form=ClockOutForm(flask.request.form)
+	return flask.render_template('clockout.html', form=form)
