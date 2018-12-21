@@ -11,18 +11,21 @@
 
 	{{ self.flashme() }}
 
-	<h2>Summary</h2>
+	<h3>Session Summary</h3>
 	
 	<div class="row">
 	<div class="col-md-12">
 		<table class="table">
-			<tr>
-				<th>Started</th>
-				<th>Ended</th>
-				<th>Tutor</th>
-				<th>Students seen</th>
-				<th>Comments</th>
-			</tr>
+			<thead class="thead-inverse">
+				<tr>
+					<th>Started</th>
+					<th>Ended</th>
+					<th>Tutor</th>
+					<th>Students seen</th>
+					<th>Comments</th>
+				</tr>
+			</thead>
+			<tbody>
 	{% for row in rows %}
 			<tr>
 				<td>{{ row.started.strftime("%d-%b-%Y   %I:%M %p") }}</td>
@@ -35,15 +38,15 @@
 				<td><a href="{{url_for('report', reporttype='tutor',
 						reportsubtype='details', id=row.id)}}">{{ 
 					row.email }}</a></td>
-				<td>{{ row.count }}</td>
+				<td><span 
+					class="badge badge-pill badge-primary">{{ row.count }}</span>
+				</td>
 				<td>{{ row.summary }}</td>
 			</tr>
 	{% endfor %}
+			</tbody>
 		</table>
 	</div>
 	</div><!-- row -->
-
-	
 </div><!-- container -->
-
 {% endblock %}

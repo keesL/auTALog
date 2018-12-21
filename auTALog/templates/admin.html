@@ -11,18 +11,19 @@
 
 	{{ self.flashme() }}
 	
-	<form method="POST">
-		<div class="form-group">
-			<a href="{{ url_for('index') }}"
-				class="btn btn-lg btn-primary">Dashboard</a>
-			<a href="{{ url_for('users') }}"
-				class="btn btn-lg btn-primary">Manage Users</a>
-			<a href="{{ url_for('courses') }}" 
-			   class="btn btn-lg btn-primary">Manage Courses</a>
-			<a href="{{ url_for('report') }}"
-				class="btn btn-lg btn-primary">View Reports</a>
+	<div class="row">
+		<div class="col-md-12">
+			<form method="POST">
+				<div class="form-group">
+					<a href="{{ url_for('index') }}"
+						class="btn btn-lg btn-primary">Dashboard</a>
+					<a href="{{ url_for('users') }}"
+						class="btn btn-lg btn-primary">Manage Users</a>
+					<a href="{{ url_for('courses') }}" 
+					   class="btn btn-lg btn-primary">Manage Courses</a>
+				</div>
+			</form>
 		</div>
-	</form>
 </div>
 
 {% endblock %}

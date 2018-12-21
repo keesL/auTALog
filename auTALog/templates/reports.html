@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}AU Math & CS Tutoring App{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+	<div class="page-header">
+		<h2>Reporting Console</h2>
+	</div>
+
+	{{ self.flashme() }}
+	
+	Choose from the following reports:
+	<div class="row">
+		<div class="col-md-12">{{ self.reports() }}</div>
+	</div>
+</div>
+
+{% endblock %}

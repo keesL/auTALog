@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}AU Math & CS Tutoring App{% endblock %}
+
+
+{% block content %}
+<div class="container">
+
+	<div class="page-header">
+		<h2>Student Tutoring report</h2>
+	</div>
+
+	{{ self.flashme() }}
+
+	<h3>Overview of tutoring encounters</h3>
+	
+	<div class="row">
+	<div class="col-md-12">
+		<table class="table">
+			<thead class="thead-inverted">
+				<tr>
+					<th>Student</th>
+					<th>Time</th>
+					<th>Subject</th>
+					<th>Tutor</th>
+					<th>Comments</th>
+				</tr>
+			</thead>
+			<tbody>
+	{% for s in sessions %}
+			<tr>
+				<td><a href="{{ url_for('report', reporttype='student',
+					reportsubtype='details', id=s.student)}}">{{ s.student }}</a></td>
+				<td>{{ s.timestamp.strftime("%d-%b-%Y   %I:%M %p") }}</td>
+				<td><a href="{{ url_for('report', reporttype='course',
+					reportsubtype='overview', id=s.courseid)}}">{{ s.subject }}</a></td>
+				<td><a href="{{url_for('report', reporttype='tutor',
+						reportsubtype='details', id=s.id)}}">{{ 
+					s.email }}</a></td>
+				<td>{{ s.comment }}</td>
+			</tr>
+	{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	</div><!-- row -->
+</div><!-- container -->
+{% endblock %}

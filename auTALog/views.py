@@ -236,10 +236,16 @@ def clockout():
 
 
 
+@app.route('/reports')
+@roles_accepted('admin')
+@login_required
+def reports():
+	return flask.render_template('reports.html')
+
+
 
 @app.route('/report/<reporttype>/<reportsubtype>')
 @app.route('/report/<reporttype>/<reportsubtype>/<id>')
-@app.route('/reports')
 @roles_accepted('admin')
 @login_required
 def report(reporttype='tutor', reportsubtype='overview', id=None):
@@ -265,7 +271,8 @@ def report(reporttype='tutor', reportsubtype='overview', id=None):
 				join   log on (tutoring_session.id=log.session) 
 				where  ta=:id group by (tutoring_session.id)
 			) as s 
-			where tutoring_session.id = s.id""")
+			where tutoring_session.id = s.id
+			order by started desc, ended desc""")
 		result=db.engine.execute(query, {'id': id})
 
 		query = text("""
@@ -278,6 +285,54 @@ def report(reporttype='tutor', reportsubtype='overview', id=None):
 		students=db.engine.execute(query, {'id': id})
 		return flask.render_template('report_tutor_details.html', email=user.email,
 			rows=result, students=students)
+
+	elif reporttype=='student' and reportsubtype=='overview':
+		query = text("""
+			select  l.student, l.timestamp, c.label as subject, 
+			        c.id as courseid, t.id, t.email, l.comment
+			from    log l, tutoring_session s, "user" t, course c
+			where   l.session = s.id
+			and     s.ta = t.id
+			and     l.subject = c.id
+			order by started desc, email asc
+		""")
+		sessions=db.engine.execute(query)
+		return flask.render_template('report_student_overview.html', sessions=sessions)
+
+	elif reporttype=='student' and reportsubtype=='details':
+		query=text("""
+			select  email, count(l.id) as c
+			from    log l, tutoring_session s, "user" u
+			where   l.session = s.id
+			and     s.ta = u.id
+			and     l.student = :id
+			group by email
+			order by c desc
+		""")
+		tutors=db.engine.execute(query, {"id": id})
+
+		query=text("""
+			select  c.label, count(c.id) as cnt
+			from    log l, course c
+			where   l.subject = c.id
+			and     l.student = :id
+			group by c.label
+			order by cnt desc
+		""")
+		courses=db.engine.execute(query, {"id": id})
+
+		query=text("""
+			select l.timestamp, c.label, u.email, l.comment
+			from   log l, "user" u, course c, tutoring_session s
+			where  l.session = s.id
+			and    s.ta      = u.id
+			and    l.subject = c.id
+			and    l.student = :id
+			order by timestamp desc
+		""")
+		sessions=db.engine.execute(query, {"id": id})
+		return flask.render_template('report_student_details.html', id=id, 
+			tutors=tutors, courses=courses, sessions=sessions)
 
 	flask.flash("Unkown report", "warning	")
 	return flask.redirect(flask.url_for("index"))

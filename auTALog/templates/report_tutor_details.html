@@ -11,13 +11,12 @@
 
 	{{ self.flashme() }}
 
-	<h2>Summary</h2>
-
 	<p>Tutoring provided by <span class="font-weight-normal">{{ email }}</span>.</p>
 	
+	<h3>Tutoring sessions</h3>
 	<div class="row">
 	<div class="col-md-12">
-		<h3>Tutoring sessions</h3>
+	
 		<table class="table">
 			<thead class="thead-inverse">
 				<tr>
@@ -31,8 +30,14 @@
 		{% for row in rows %}
 				<tr>
 					<td>{{ row.started.strftime("%d-%b-%Y   %I:%M %p") }}</td>
-					<td>{{ row.ended.strftime("%d-%b-%Y   %I:%M %p") }}</td>
-					<td>{{ row.c }}</td>
+					<td>{% if row.ended is none %}
+						In progress
+						{% else %}
+						{{ row.ended.strftime("%d-%b-%Y   %I:%M %p") }}
+						{% endif %}</td>
+					<td><span 
+						class="badge badge-pill badge-primary">{{ row.c }}</span>
+					</td>
 				</tr>
 		{% endfor %}
 			</tbody>
@@ -40,9 +45,9 @@
 	</div>
 	</div><!-- row -->
 
+	<h3>Students seen</h3>
 	<div class="row">
 	<div class="col-md-12">
-		<h3>Students seen</h3>
 		<table class="table">
 			<thead class="thead-inverse">
 				<tr>
@@ -55,7 +60,9 @@
 		{% for student in students %}
 				<tr>
 					<td>{{ student.student }}</td>
-					<td>{{ student.count }}</td>
+					<td><span 
+						class="badge badge-pill badge-primary">{{ student.count }}</span>
+					</td>
 				</tr>
 		{% endfor %}
 			</tbody>

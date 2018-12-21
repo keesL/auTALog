@@ -46,8 +46,10 @@
 				class="btn btn-lg btn-warning">Log out</a>
 			{% endif %}
 			{% if current_user.has_role('admin') %}
+				<a class="btn btn-lg btn-info" 
+					href="{{url_for('reports')}}">Reports</a>
 				<a class="btn btn-lg btn-danger" 
-				href="{{url_for('admin')}}">Admin</a>
+					href="{{url_for('admin')}}">Admin</a>
 			{% endif %}
 		</div>
 	</form>

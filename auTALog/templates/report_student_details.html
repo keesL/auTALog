@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}AU Math & CS Tutoring App{% endblock %}
+
+
+{% block content %}
+<div class="container">
+
+	<div class="page-header">
+		<h2>Detailed Student Report for Student {{ id }}</h2>
+	</div>
+
+	{{ self.flashme() }}
+
+
+	<h3>Sessions by tutor</h3>
+	<div class="row">
+	<div class="col-md-12">
+	
+		<table class="table">
+			<thead class="thead-inverse">
+				<tr>
+					<th>Tutor</th>
+					<th>Number of times seen</th>
+				</tr>
+			</thead>
+
+			<tbody>
+		{% for t in tutors %}
+				<tr>
+					<td>{{ t.email }}</td>
+					<td><span 
+						class="badge badge-pill badge-primary">{{ t.c }}</span>
+					</td>
+				</tr>
+		{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	</div><!-- row -->
+
+	<h3>Sessions by course</h3>
+	<div class="row">
+	<div class="col-md-12">
+	
+		<table class="table">
+			<thead class="thead-inverse">
+				<tr>
+					<th>Course</th>
+					<th>Number of times seen</th>
+				</tr>
+			</thead>
+
+			<tbody>
+		{% for c in courses %}
+				<tr>
+					<td>{{ c.label }}</td>
+					<td><span 
+						class="badge badge-pill badge-primary">{{ c.cnt }}</span>
+					</td>
+				</tr>
+		{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	</div><!-- row -->
+
+	<h3>Sessions</h3>
+	<div class="row">
+	<div class="col-md-12">
+	
+		<table class="table">
+			<thead class="thead-inverse">
+				<tr>
+					<th>Timestamp</th>
+					<th>Subject</th>
+					<th>Tutor</th>
+					<th>Comments</th>
+				</tr>
+			</thead>
+
+			<tbody>
+		{% for s in sessions %}
+				<tr>
+					<td>{{ s.timestamp.strftime("%a %d-%b-%Y   %I:%M %p")  }}</td>
+					<td>{{ s.label }}</td>
+					<td>{{ s.email }}</td>
+					<td>{{ s.comment }}</td>
+				</tr>
+		{% endfor %}
+			</tbody>
+		</table>
+	</div>
+	</div><!-- row -->
+</div><!-- container -->
+{% endblock %}
