@@ -208,7 +208,7 @@ def courses(id=None, action=None):
 
 
 @app.route('/clockout', methods=['GET', 'POST'])
-@roles_accepted('admin', 'tutor')
+@roles_accepted('admin', 'tutor', 'grader')
 @login_required
 def clockout():
 	form=ClockOutForm(flask.request.form)
