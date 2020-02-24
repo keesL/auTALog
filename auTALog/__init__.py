@@ -11,7 +11,6 @@ app = Flask(__name__)
 app.config['SECURITY_PASSWORD_SALT'] = 'unused'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['BOOTSTRAP_USE_MINIFIED'] = False
-
 app.config['SQLALCHEMY_DATABASE_URI'] = config.config['db_uri']
 app.secret_key=config.config['secret_key']
 
@@ -43,3 +42,4 @@ def setupDB():
 
         ins = roles_users.insert().values(user_id=adminUser.id, role_id=adminRole.id)
         db.session.execute(ins)
+

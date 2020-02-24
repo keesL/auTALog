@@ -72,7 +72,7 @@ def post():
 		Log.timestamp.desc()).limit(5)
 
 	return flask.render_template("post.html", logs=logs, 
-		courses=Course.query.order_by(Course.id).all(), form=form)
+		courses=Course.query.order_by(Course.label).all(), form=form)
 
 
 
